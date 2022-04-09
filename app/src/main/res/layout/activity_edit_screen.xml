@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".EditScreen">
+
+    <ImageView
+        android:id="@+id/Imageee"
+        android:layout_width="320dp"
+        android:layout_height="320dp"
+        android:layout_marginTop="60dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/crop"
+        android:src="@mipmap/ic_launcher"
+        android:elevation="20dp"
+        />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/undo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cornerRadius="15dp"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        app:strokeColor="@color/teal_200"
+        app:strokeWidth="2dp"
+        android:text="Undo"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toBottomOf="@id/Imageee"
+        app:layout_constraintLeft_toLeftOf="@id/Imageee"
+        app:layout_constraintRight_toLeftOf="@id/crop"
+        />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/crop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cornerRadius="15dp"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        app:strokeColor="@color/teal_200"
+        app:strokeWidth="2dp"
+        android:text="Crop"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="10dp"
+        app:layout_constraintTop_toBottomOf="@id/Imageee"
+        app:layout_constraintLeft_toRightOf="@id/undo"
+        app:layout_constraintRight_toLeftOf="@id/rotate"
+        />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/rotate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cornerRadius="15dp"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        app:strokeColor="@color/teal_200"
+        app:strokeWidth="2dp"
+        android:text="Rotate"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toBottomOf="@id/Imageee"
+        app:layout_constraintLeft_toRightOf="@id/crop"
+        app:layout_constraintRight_toRightOf="@id/Imageee"
+        />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/save"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:cornerRadius="7dp"
+        app:strokeColor="#C2185B"
+        app:strokeWidth="1dp"
+        android:text="Save"
+        android:textColor="@color/black"
+        android:backgroundTint="#FBC02D"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toBottomOf="@id/crop"
+        app:layout_constraintLeft_toLeftOf="@id/Imageee"
+        app:layout_constraintRight_toRightOf="@id/Imageee"
+
+        />
+
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
