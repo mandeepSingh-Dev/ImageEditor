@@ -13,6 +13,7 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
@@ -49,8 +50,12 @@ class MainActivity : AppCompatActivity()
 
         binding.takeSelfieButton.setOnClickListener {
 
-            binding.buttonsconstraintLayout.visibility = View.GONE
+            binding.captureButton.isEnabled = true
+            binding.previewParentLayout.animation = AnimationUtils.loadAnimation(this,R.anim.camera_appear)
             binding.previewParentLayout.visibility = View.VISIBLE
+
+            binding.buttonsconstraintLayout.animation = AnimationUtils.loadAnimation(this,R.anim.alpha_disappear)
+            binding.buttonsconstraintLayout.visibility = View.GONE
 
             cameraProviderFuture = ProcessCameraProvider.getInstance(this)
             requestCamera()
@@ -112,6 +117,7 @@ class MainActivity : AppCompatActivity()
         preview.setSurfaceProvider(binding.activityMainPreviewView.surfaceProvider)
 
          imageCapture = ImageCapture.Builder().build()
+
         try {
             cameraProvider.unbindAll()
             camera = cameraProvider.bindToLifecycle(this, cameraSelector, imageCapture, preview)
@@ -175,10 +181,15 @@ class MainActivity : AppCompatActivity()
                 override fun onError(exc: ImageCaptureException) {}
                 override fun onImageSaved(output: ImageCapture.OutputFileResults)
                 {
-                output.savedUri?.apply { savedUri = this }
+                    //deleting captured saved image from gallery
+                    // so that we can store our own edited image from Edit Activity
+
+
+                    output.savedUri?.apply { savedUri = this }
                     val intent = Intent(this@MainActivity,EditScreen::class.java)
                     intent.putExtra("SAVED_URI",savedUri.toString())
                     startActivity(intent)
+
 
                    // CropImage.activity(savedUri).start(this@MainActivity)
                    }
@@ -193,7 +204,12 @@ class MainActivity : AppCompatActivity()
     @SuppressLint("RestrictedApi")
     override fun onBackPressed() {
         if(binding.previewParentLayout.visibility == View.VISIBLE) {
+
+            binding.captureButton.isEnabled = false
+            binding.previewParentLayout.animation = AnimationUtils.loadAnimation(this,R.anim.cam_disappear)
             binding.previewParentLayout.visibility = View.GONE
+
+            binding.buttonsconstraintLayout.animation = AnimationUtils.loadAnimation(this,R.anim.alpha_appear)
             binding.buttonsconstraintLayout.visibility = View.VISIBLE
 
             cameraProviderFuture?.cancel(true)
