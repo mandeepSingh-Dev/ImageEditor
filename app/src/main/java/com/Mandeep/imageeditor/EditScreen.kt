@@ -140,16 +140,26 @@ class EditScreen : AppCompatActivity()
         }
 
         override fun parseResult(resultCode: Int, intent: Intent?): Intent {
-             return intent!!
+            var mintent:Intent
+            if(intent!=null)
+            {
+                mintent = intent
+            }
+            else{
+                mintent = Intent()
+            }
+             return mintent
         }
     }
     val launcher = registerForActivityResult(activityResultContract,object:ActivityResultCallback<Intent>{
         override fun onActivityResult(result: Intent?) {
-            bitmap = result?.extras?.getParcelable("data")!!
-            Log.d("dfdbfjd",bitmap.toString())
-            binding.Imageee.setImageBitmap(bitmap)
+            if(result?.extras!=null) {
+                bitmap = result?.extras?.getParcelable("data")!!
+                Log.d("dfdbfjd", bitmap.toString())
+                binding.Imageee.setImageBitmap(bitmap)
 
-            undoList?.add(bitmap)
+                undoList?.add(bitmap)
+            }
         }
     })
 }
