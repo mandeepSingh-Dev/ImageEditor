@@ -17,6 +17,11 @@ import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.app.AppCompatActivity
 import com.Mandeep.imageeditor.databinding.ActivityEditScreenBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
 import java.lang.Exception
 
 
@@ -60,16 +65,21 @@ class EditScreen : AppCompatActivity()
             launcher.launch(cropIntent)
 
         }
+
           savedUri?.let {  bitmap = BitmapFactory.decodeStream(contentResolver?.openInputStream(it))}
           undoList?.add(bitmap)
         //rotate image
         binding.rotate.setOnClickListener {
-            matrix.postRotate(90f)
-            val bMapRotate = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
-            val bmd = BitmapDrawable(resources,bMapRotate)
-            binding.Imageee.setImageBitmap(bMapRotate)
-            binding.Imageee.setImageDrawable(bmd)
-            undoList?.add(bMapRotate)
+           CoroutineScope(Dispatchers.IO).launch {
+               matrix.postRotate(90f)
+               val bMapRotate = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+               val bmd = BitmapDrawable(resources, bMapRotate)
+               withContext(Dispatchers.Main) {
+                   binding.Imageee.setImageBitmap(bMapRotate)
+                   binding.Imageee.setImageDrawable(bmd)
+               }
+               undoList?.add(bMapRotate)
+           }
            // bitmap = bMapRotate
             //binding.Imageee.setImageDrawable(bmd)
         }
@@ -96,10 +106,21 @@ class EditScreen : AppCompatActivity()
             val outstream = contentResolver?.openOutputStream(insertedUri!!)
 
             //getting latest (last) bitmap from undoList
+            if(undoList?.size!=0) {
                 val btmp = undoList?.get(undoList?.size?.minus(1)!!)
-            Log.d("fkdfkdf",undoList?.size.toString())
-                btmp?.compress(Bitmap.CompressFormat.JPEG,100,outstream)
+                btmp?.compress(Bitmap.CompressFormat.JPEG, 100, outstream)
 
+                CoroutineScope(Dispatchers.IO).launch {
+                    val bytes = ByteArrayOutputStream()
+                    btmp?.compress(Bitmap.CompressFormat.JPEG, 50, bytes)
+                    val byteArray = bytes.toByteArray()
+                    val intent = Intent(this@EditScreen, MainActivity::class.java)
+                    intent.putExtra("Bitmap", byteArray)
+                    withContext(Dispatchers.Main) {
+                        startActivity(intent)
+                    }
+                }
+            }
         }
     }
 

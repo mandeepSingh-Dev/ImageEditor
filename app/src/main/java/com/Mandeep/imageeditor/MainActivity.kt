@@ -6,6 +6,7 @@ import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -15,6 +16,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.Toast
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -46,6 +50,15 @@ class MainActivity : AppCompatActivity()
         binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
 
+       val byteArray =  intent.getByteArrayExtra("Bitmap")
+        if(byteArray!=null) {
+            val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+            //  val bitmap = intent.getParcelableExtra<Bitmap>("Bitmap")
+            if (bitmap != null) {
+                binding.cardView.visibility = View.VISIBLE
+                binding.imagePreview.setImageBitmap(bitmap)
+            }
+        }
         cameraExecutable = Executors.newSingleThreadExecutor()
 
         binding.takeSelfieButton.setOnClickListener {
@@ -63,8 +76,10 @@ class MainActivity : AppCompatActivity()
         binding.captureButton.setOnClickListener {
             takePhoto()
         }
-
-    }
+        binding.uploadImageButton.setOnClickListener {
+            launcher.launch("image/*")
+        }
+    } //E.O.onCreate
     private fun requestCamera() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             Log.d("fkdnfdk","granted")
@@ -220,5 +235,16 @@ class MainActivity : AppCompatActivity()
             super.onBackPressed()
         }
     }
+
+   val launcher = registerForActivityResult(ActivityResultContracts.GetContent(),
+       ActivityResultCallback {
+           if(it!=null)
+           {
+               savedUri = it
+               val intent = Intent(this@MainActivity,EditScreen::class.java)
+               intent.putExtra("SAVED_URI",savedUri.toString())
+               startActivity(intent)
+           }
+       })
 
 }
