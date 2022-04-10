@@ -26,16 +26,15 @@ import androidx.core.content.ContextCompat
 import com.Mandeep.imageeditor.databinding.ActivityMainBinding
 import com.google.common.util.concurrent.ListenableFuture
 import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 
 
-class MainActivity : AppCompatActivity()
+class HomeScreen : AppCompatActivity()
 {
     lateinit var binding:ActivityMainBinding
 
-    val PERMISSION_REQUEST_CAMERA = 101
+    private val PERMISSION_REQUEST_CAMERA = 101
     private var cameraProviderFuture: ListenableFuture<ProcessCameraProvider>? = null
-    var cameraProvider:ProcessCameraProvider?=null
+    private var cameraProvider:ProcessCameraProvider?=null
     lateinit var camera: Camera
     lateinit var imageCapture:ImageCapture
     lateinit var cameraExecutable: ExecutorService
@@ -46,10 +45,7 @@ class MainActivity : AppCompatActivity()
         binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
         supportActionBar?.hide()
-/**------------------------------*/
-       // binding.clickonImageTextview.animation = AnimationUtils.loadAnimation(this,R.anim.camera_appear)
 
-/**-------------------------------*/
        val byteArray =  intent.getByteArrayExtra("Bitmap")
         if(byteArray!=null) {
             val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
@@ -59,10 +55,8 @@ class MainActivity : AppCompatActivity()
                 binding.imagePreview.setImageBitmap(bitmap)
             }
         }
-        cameraExecutable = Executors.newSingleThreadExecutor()
 
         binding.takeSelfieButton.setOnClickListener {
-
             binding.captureButton.isEnabled = true
             binding.previewParentLayout.animation = AnimationUtils.loadAnimation(this,R.anim.camera_appear)
             binding.previewParentLayout.visibility = View.VISIBLE
@@ -73,14 +67,19 @@ class MainActivity : AppCompatActivity()
             cameraProviderFuture = ProcessCameraProvider.getInstance(this)
             requestCamera()
         }
+
         binding.captureButton.setOnClickListener {
             binding.progressbar.visibility = View.VISIBLE
            // binding.captureButton.isEnabled = true
-            takePhoto()
+           try {
+               takePhoto()
+           }catch(e:Exception){}
         }
+
         binding.uploadImageButton.setOnClickListener {
             launcher.launch("image/*")
         }
+
         binding.backbutton1.setOnClickListener {
             if(binding.previewParentLayout.visibility == View.VISIBLE) {
 
@@ -99,7 +98,8 @@ class MainActivity : AppCompatActivity()
                 onBackPressed()
             }
         }
-    } //E.O.onCreate
+    } //End.Of.onCreate
+
     private fun requestCamera() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             Log.d("fkdnfdk","granted")
@@ -108,14 +108,14 @@ class MainActivity : AppCompatActivity()
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), PERMISSION_REQUEST_CAMERA)
         }
     }//end of requestCamera
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String?>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSION_REQUEST_CAMERA) {
             if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 startCamera()
             } else {
-                 Toast.makeText(this, "Camera Permission Denied", Toast.LENGTH_SHORT).show()
-            }
+                 Toast.makeText(this, "Camera Permission Denied", Toast.LENGTH_SHORT).show() }
         }
     }//end of onRequetPermiss...
 
@@ -126,21 +126,15 @@ class MainActivity : AppCompatActivity()
             try {
                 cameraProvider = cameraProviderFuture?.get()
 
-                cameraProvider?.let {
-                    bindCameraPreview(it)
-                }
+                cameraProvider?.let { bindCameraPreview(it) }
 
-            } catch (e: Exception) {
-            } catch (e: InterruptedException) {
-            }
+            } catch (e: Exception) { }
         }, ContextCompat.getMainExecutor(this))
+    }//End of startCamera()
 
-    }
-    fun bindCameraPreview(cameraProvider: ProcessCameraProvider)
+    private fun bindCameraPreview(cameraProvider: ProcessCameraProvider)
     {
-        Log.d("48gh4g","binding is stared")
-
-        //  binding?.activityMainPreviewView?.implementationMode = PreviewView.ImplementationMode.COMPATIBLE
+        Log.d("48gh4g","binding is started")
         binding.activityMainPreviewView.implementationMode = PreviewView.ImplementationMode.PERFORMANCE
 
         val preview = Preview.Builder().build()
@@ -151,7 +145,7 @@ class MainActivity : AppCompatActivity()
 
         preview.setSurfaceProvider(binding.activityMainPreviewView.surfaceProvider)
 
-         imageCapture = ImageCapture.Builder().build()
+        imageCapture = ImageCapture.Builder().build()
 
         try {
             cameraProvider.unbindAll()
@@ -180,23 +174,17 @@ class MainActivity : AppCompatActivity()
                 }
                 override fun onImageSaved(output: ImageCapture.OutputFileResults)
                 {
-                    //deleting captured saved image from gallery
-                    // so that we can store our own edited image from Edit Activity
                     binding.captureButton.isEnabled = false
                     binding.progressbar.visibility = View.GONE
+
                     output.savedUri?.apply { savedUri = this }
-                    val intent = Intent(this@MainActivity,EditScreen::class.java)
+                    val intent = Intent(this@HomeScreen,EditScreen::class.java)
                     intent.putExtra("SAVED_URI",savedUri.toString())
                     startActivity(intent)
-
-
-                   // CropImage.activity(savedUri).start(this@MainActivity)
                    }
             })
 
     }//E.O. takephoto()
-
-
 
     @SuppressLint("RestrictedApi")
     override fun onBackPressed() {
@@ -220,10 +208,9 @@ class MainActivity : AppCompatActivity()
 
    private val launcher = registerForActivityResult(ActivityResultContracts.GetContent(),
        ActivityResultCallback {
-           if(it!=null)
-           {
+           if(it!=null) {
                savedUri = it
-               val intent = Intent(this@MainActivity,EditScreen::class.java)
+               val intent = Intent(this@HomeScreen,EditScreen::class.java)
                intent.putExtra("SAVED_URI",savedUri.toString())
                startActivity(intent)
            }
@@ -235,10 +222,9 @@ class MainActivity : AppCompatActivity()
     override fun onResume() {
         super.onResume()
         binding.captureButton.isEnabled = true
-
     }
+
     override fun onDestroy() {
         super.onDestroy()
-        cameraExecutable.shutdown()
     }
 }

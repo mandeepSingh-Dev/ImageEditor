@@ -1,6 +1,5 @@
 package com.Mandeep.imageeditor
 
-import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
@@ -18,14 +17,12 @@ import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.app.AppCompatActivity
 import com.Mandeep.imageeditor.databinding.ActivityEditScreenBinding
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.lang.Exception
-import kotlin.properties.Delegates
 
 
 class EditScreen : AppCompatActivity()
@@ -49,8 +46,7 @@ class EditScreen : AppCompatActivity()
 
         //crop image
         binding.crop.setOnClickListener {
-            //call the standard crop action intent (the user device may not support it)
-            //call the standard crop action intent (the user device may not support it)
+
             val cropIntent = Intent("com.android.camera.action.CROP")
             //indicate image type and Uri
             cropIntent.setDataAndType(savedUri, "image/*")
@@ -151,7 +147,7 @@ class EditScreen : AppCompatActivity()
             val bytes = ByteArrayOutputStream()
             btmp?.compress(Bitmap.CompressFormat.JPEG, 50, bytes)
             val byteArray = bytes.toByteArray()
-            val intent = Intent(this@EditScreen, MainActivity::class.java)
+            val intent = Intent(this@EditScreen, HomeScreen::class.java)
             intent.putExtra("Bitmap", byteArray)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
 

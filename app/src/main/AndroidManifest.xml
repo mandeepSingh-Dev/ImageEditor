@@ -17,7 +17,7 @@
             android:name=".EditScreen"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".HomeScreen"
             android:exported="true"
            >
             <intent-filter>
