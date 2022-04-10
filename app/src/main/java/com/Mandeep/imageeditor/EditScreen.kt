@@ -98,7 +98,9 @@ class EditScreen : AppCompatActivity()
                 saveImage()
             }
         }
-        binding
+        binding.backbutton2.setOnClickListener {
+            finish()
+        }
     }//End of onCreate
 
 

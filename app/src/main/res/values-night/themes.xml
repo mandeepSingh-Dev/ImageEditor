@@ -11,7 +11,7 @@
         <item name="colorOnSecondary">#5E0981</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
-        <item name="android:windowBackground">#D2E4CB</item>
+        <item name="android:windowBackground">#E0ECDC</item>
         <!-- Customize your theme here. -->
     </style>
     <style name="hello" parent="Theme.AppCompat">
