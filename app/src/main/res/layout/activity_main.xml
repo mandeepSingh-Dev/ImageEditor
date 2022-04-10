@@ -7,14 +7,48 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <LinearLayout
+        android:id="@+id/actionLinearlay1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+        <ImageView
+            android:id="@+id/backbutton1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_arrow_back_ios_new_24"
+            android:layout_gravity="center"
+            android:padding="5dp"
+            android:layout_marginLeft="10dp"
+            style="@style/hello"
+            android:background="@drawable/shape"
+            app:tint="@color/black"
+            android:backgroundTint="#DD2C00"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/actionbar_name"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline1"
+            android:textSize="@dimen/actionbar_textsize"
+            android:textColor="@color/black"
+            android:drawablePadding="20dp"
+            android:gravity="center"
+            android:layout_weight="1"
+            >
+        </TextView>
+    </LinearLayout>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/buttonsconstraintLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/actionLinearlay1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent">
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginBottom="40dp">
         <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
         android:layout_width="wrap_content"
@@ -22,8 +56,9 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_margin="20dp"
-        app:cardCornerRadius="10dp"
-            android:visibility="gone"
+            android:layout_marginTop="20dp"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="0dp"
             app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toTopOf="@id/takeSelfieButton">
           <androidx.appcompat.widget.AppCompatImageView
@@ -35,14 +70,21 @@
               app:layout_constraintBottom_toTopOf="@id/takeSelfieButton"
               app:layout_constraintTop_toTopOf="parent"
               app:layout_constraintLeft_toLeftOf="parent"/>
+
     </androidx.cardview.widget.CardView>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/takeSelfieButton"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:text="Take Selfie"
+        android:text="@string/takeselfie"
         android:textAllCaps="false"
+        android:textColor="@color/black"
+        app:rippleColor="#7B1FA2"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline1"
+        android:textSize="20sp"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         app:layout_constraintTop_toBottomOf="@id/cardView"
         app:layout_constraintLeft_toLeftOf="@id/cardView"
@@ -57,9 +99,15 @@
         android:id="@+id/uploadImageButton"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:text="Gallery"
+        android:text="@string/gallery"
         android:textAllCaps="false"
         app:cornerRadius="10dp"
+        app:rippleColor="#DD2C00"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        android:textColor="@color/black"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline1"
+        android:textSize="20sp"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         app:layout_constraintTop_toBottomOf="@id/takeSelfieButton"
         app:layout_constraintLeft_toLeftOf="@id/takeSelfieButton"
@@ -74,12 +122,13 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/previewParentLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/actionLinearlay1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent">
+
         <androidx.camera.view.PreviewView
             android:id="@+id/activity_main_previewView"
             android:layout_width="match_parent"
@@ -110,5 +159,16 @@
             android:layout_marginBottom="100dp"
             app:strokeColor="@color/white"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ProgressBar
+        android:id="@+id/progressbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:visibility="gone"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

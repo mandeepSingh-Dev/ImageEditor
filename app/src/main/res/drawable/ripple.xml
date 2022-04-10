@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="#DD2C00"
+    android:radius="30dp"
+    android:effectColor="@color/black"
+    android:duration="5000">
+
+</ripple>

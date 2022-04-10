@@ -3,9 +3,13 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/ImageEditor/app/src/main/res/drawable/ic_baseline_arrow_back_ios_new_24.xml" value="0.138" />
+        <entry key="..\:/ImageEditor/app/src/main/res/drawable/ic_baseline_crop_24.xml" value="0.138" />
         <entry key="..\:/ImageEditor/app/src/main/res/drawable/imagepreview_shape.xml" value="0.152" />
+        <entry key="..\:/ImageEditor/app/src/main/res/drawable/ripple.xml" value="0.138" />
+        <entry key="..\:/ImageEditor/app/src/main/res/drawable/shape.xml" value="0.138" />
         <entry key="..\:/ImageEditor/app/src/main/res/layout/activity_edit_screen.xml" value="0.23802083333333332" />
-        <entry key="..\:/ImageEditor/app/src/main/res/layout/activity_main.xml" value="0.22395833333333334" />
+        <entry key="..\:/ImageEditor/app/src/main/res/layout/activity_main.xml" value="0.176" />
       </map>
     </option>
   </component>

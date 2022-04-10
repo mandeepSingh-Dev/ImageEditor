@@ -2,15 +2,19 @@
     <!-- Base application theme. -->
     <style name="Theme.ImageEditor" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorPrimary">#00ACC1</item>
+        <item name="colorPrimaryVariant">#94B886</item>
+        <item name="colorOnPrimary">#4E2C2C</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorSecondary">#C6FF00</item>
+        <item name="colorSecondaryVariant">#FF3D00</item>
+        <item name="colorOnSecondary">#5E0981</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <item name="android:windowBackground">#D2E4CB</item>
         <!-- Customize your theme here. -->
+    </style>
+    <style name="hello" parent="Theme.AppCompat">
+        <item name="rippleColor">#4545ff</item>
     </style>
 </resources>

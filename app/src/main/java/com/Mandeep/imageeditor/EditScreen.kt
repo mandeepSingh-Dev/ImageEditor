@@ -1,5 +1,6 @@
 package com.Mandeep.imageeditor
 
+import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
@@ -17,12 +18,14 @@ import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.app.AppCompatActivity
 import com.Mandeep.imageeditor.databinding.ActivityEditScreenBinding
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.lang.Exception
+import kotlin.properties.Delegates
 
 
 class EditScreen : AppCompatActivity()
@@ -32,10 +35,12 @@ class EditScreen : AppCompatActivity()
     lateinit var bitmap:Bitmap
     val matrix:Matrix by lazy { Matrix() }
     var undoList:ArrayList<Bitmap>?=null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityEditScreenBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
+        supportActionBar?.hide()
 
         undoList = ArrayList()
 
@@ -83,48 +88,21 @@ class EditScreen : AppCompatActivity()
            // bitmap = bMapRotate
             //binding.Imageee.setImageDrawable(bmd)
         }
-
         //undo actions
         binding.undo.setOnClickListener {
             undo()
         }
-
         //save image
         binding.save.setOnClickListener {
-            Log.d("dfjdfbjd43",undoList?.size.toString())
-
-            val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-            val contentValues = ContentValues()
-            contentValues.apply {
-                put(MediaStore.Images.ImageColumns.MIME_TYPE,"image/png")
-                put(MediaStore.Images.ImageColumns.DISPLAY_NAME,System.currentTimeMillis())
-                put(MediaStore.Images.ImageColumns.TITLE,System.currentTimeMillis())
-                put(MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME, Environment.DIRECTORY_PICTURES)
-            }
-
-            val insertedUri = contentResolver.insert(uri,contentValues)
-            val outstream = contentResolver?.openOutputStream(insertedUri!!)
-
-            //getting latest (last) bitmap from undoList
-            if(undoList?.size!=0) {
-                val btmp = undoList?.get(undoList?.size?.minus(1)!!)
-                btmp?.compress(Bitmap.CompressFormat.JPEG, 100, outstream)
-
-                CoroutineScope(Dispatchers.IO).launch {
-                    val bytes = ByteArrayOutputStream()
-                    btmp?.compress(Bitmap.CompressFormat.JPEG, 50, bytes)
-                    val byteArray = bytes.toByteArray()
-                    val intent = Intent(this@EditScreen, MainActivity::class.java)
-                    intent.putExtra("Bitmap", byteArray)
-                    withContext(Dispatchers.Main) {
-                        startActivity(intent)
-                    }
-                }
+            CoroutineScope(Dispatchers.Main).launch {
+                saveImage()
             }
         }
-    }
+        binding
+    }//End of onCreate
 
-    fun undo(){
+
+    private fun undo(){
         Log.d("dfdfjdbf33",undoList?.size.toString())
         if(undoList?.size!!>0)
         {
@@ -147,6 +125,37 @@ class EditScreen : AppCompatActivity()
             bitmap.let{ undoList?.add(it)}
             //bitmap?.let { bitmap =it }
 
+        }
+    }
+    private suspend fun saveImage() = withContext(Dispatchers.IO)
+    {
+        val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        val contentValues = ContentValues()
+        contentValues.apply {
+            put(MediaStore.Images.ImageColumns.MIME_TYPE,"image/png")
+            put(MediaStore.Images.ImageColumns.DISPLAY_NAME,System.currentTimeMillis())
+            put(MediaStore.Images.ImageColumns.TITLE,System.currentTimeMillis())
+            put(MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME, Environment.DIRECTORY_PICTURES)
+        }
+
+        val insertedUri = contentResolver.insert(uri,contentValues)
+        val outstream = contentResolver?.openOutputStream(insertedUri!!)
+
+        //getting latest (last) bitmap from undoList
+        if(undoList?.size!=0) {
+            val btmp = undoList?.get(undoList?.size?.minus(1)!!)
+              btmp?.compress(Bitmap.CompressFormat.JPEG, 100, outstream)
+
+            val bytes = ByteArrayOutputStream()
+            btmp?.compress(Bitmap.CompressFormat.JPEG, 50, bytes)
+            val byteArray = bytes.toByteArray()
+            val intent = Intent(this@EditScreen, MainActivity::class.java)
+            intent.putExtra("Bitmap", byteArray)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+
+            withContext(Dispatchers.Main) {
+                startActivity(intent)
+            }
         }
     }
 

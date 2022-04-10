@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
@@ -17,7 +16,6 @@ import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.activity.result.ActivityResultCallback
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
@@ -27,8 +25,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.Mandeep.imageeditor.databinding.ActivityMainBinding
 import com.google.common.util.concurrent.ListenableFuture
-import com.theartofdev.edmodo.cropper.CropImage
-import java.io.OutputStream
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -49,7 +45,11 @@ class MainActivity : AppCompatActivity()
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
+        supportActionBar?.hide()
+/**------------------------------*/
+       // binding.clickonImageTextview.animation = AnimationUtils.loadAnimation(this,R.anim.camera_appear)
 
+/**-------------------------------*/
        val byteArray =  intent.getByteArrayExtra("Bitmap")
         if(byteArray!=null) {
             val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
@@ -74,10 +74,30 @@ class MainActivity : AppCompatActivity()
             requestCamera()
         }
         binding.captureButton.setOnClickListener {
+            binding.progressbar.visibility = View.VISIBLE
+           // binding.captureButton.isEnabled = true
             takePhoto()
         }
         binding.uploadImageButton.setOnClickListener {
             launcher.launch("image/*")
+        }
+        binding.backbutton1.setOnClickListener {
+            if(binding.previewParentLayout.visibility == View.VISIBLE) {
+
+                binding.captureButton.isEnabled = false
+                binding.previewParentLayout.animation = AnimationUtils.loadAnimation(this,R.anim.cam_disappear)
+                binding.previewParentLayout.visibility = View.GONE
+
+                binding.buttonsconstraintLayout.animation = AnimationUtils.loadAnimation(this,R.anim.alpha_appear)
+                binding.buttonsconstraintLayout.visibility = View.VISIBLE
+
+                cameraProviderFuture?.cancel(true)
+                cameraProvider?.unbindAll()
+                cameraProvider = null
+            }
+            else{
+                onBackPressed()
+            }
         }
     } //E.O.onCreate
     private fun requestCamera() {
@@ -139,45 +159,10 @@ class MainActivity : AppCompatActivity()
         }catch (e:java.lang.Exception){}
     }
 
-
-   /* fun buildImageCaptureUseCase(): ImageCapture {
-        return ImageCapture.Builder()
-            .setTargetAspectRatio(aspectRatio)
-            .setTargetRotation(rotation)
-            .setTargetResolution(resolution)
-            .setFlashMode(flashMode)
-            .setCaptureMode(captureMode)
-            .build()
-    }*/
-    override fun onResume() {
-    super.onResume()
-  /*  if(binding.previewParentLayout.visibility == View.VISIBLE) {
-        cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-        requestCamera()
-    }*/
-}
-
-    fun getOutputStream(): OutputStream {
-        val uri = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
-        val contentValues = ContentValues()
-        contentValues.let {
-            it.put(MediaStore.Images.ImageColumns.MIME_TYPE,"image/png")
-            it.put(MediaStore.Images.ImageColumns.DISPLAY_NAME,System.currentTimeMillis())
-            it.put(MediaStore.Images.ImageColumns.TITLE,System.currentTimeMillis())
-            it.put(MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME,Environment.DIRECTORY_PICTURES)
-        }
-        val insertedUri = contentResolver.insert(uri,contentValues)
-
-        val outputStream = contentResolver?.openOutputStream(insertedUri!!)
-
-        Log.d("3fhyyyyyy3ign", "SAVED IMAGE"+insertedUri)
-
-        return outputStream!!
-    }
-
     private fun takePhoto() {
+        binding.captureButton.isEnabled = false
 
-        val uri = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
+        val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
         val contentValues = ContentValues()
         contentValues.apply {
             put(MediaStore.Images.ImageColumns.MIME_TYPE,"image/png")
@@ -188,18 +173,17 @@ class MainActivity : AppCompatActivity()
 
         val outputOptions = ImageCapture.OutputFileOptions.Builder(contentResolver,uri,contentValues).build()
 
-        imageCapture.takePicture(
-            outputOptions,
-            ContextCompat.getMainExecutor(this),
-            object : ImageCapture.OnImageSavedCallback
-            {
-                override fun onError(exc: ImageCaptureException) {}
+        imageCapture.takePicture(outputOptions, ContextCompat.getMainExecutor(this),
+            object : ImageCapture.OnImageSavedCallback {
+                override fun onError(exc: ImageCaptureException) {
+                    binding.captureButton.isEnabled = true
+                }
                 override fun onImageSaved(output: ImageCapture.OutputFileResults)
                 {
                     //deleting captured saved image from gallery
                     // so that we can store our own edited image from Edit Activity
-
-
+                    binding.captureButton.isEnabled = false
+                    binding.progressbar.visibility = View.GONE
                     output.savedUri?.apply { savedUri = this }
                     val intent = Intent(this@MainActivity,EditScreen::class.java)
                     intent.putExtra("SAVED_URI",savedUri.toString())
@@ -209,12 +193,10 @@ class MainActivity : AppCompatActivity()
                    // CropImage.activity(savedUri).start(this@MainActivity)
                    }
             })
-    }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        cameraExecutable.shutdown()
-    }
+    }//E.O. takephoto()
+
+
 
     @SuppressLint("RestrictedApi")
     override fun onBackPressed() {
@@ -236,7 +218,7 @@ class MainActivity : AppCompatActivity()
         }
     }
 
-   val launcher = registerForActivityResult(ActivityResultContracts.GetContent(),
+   private val launcher = registerForActivityResult(ActivityResultContracts.GetContent(),
        ActivityResultCallback {
            if(it!=null)
            {
@@ -245,6 +227,18 @@ class MainActivity : AppCompatActivity()
                intent.putExtra("SAVED_URI",savedUri.toString())
                startActivity(intent)
            }
+           else{
+               Log.d("difnd","dk")
+           }
        })
 
+    override fun onResume() {
+        super.onResume()
+        binding.captureButton.isEnabled = true
+
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        cameraExecutable.shutdown()
+    }
 }
